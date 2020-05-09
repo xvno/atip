@@ -26,6 +26,9 @@
                     <option value="cover">cover</option>
                 </select>
                 <br>
+                <label for="rulers">Show rulers:</label>
+                <input type="checkbox" name="rulers" id="rulers" checked>
+                <br>
                 <label for="fileChoser">Choose an image:</label>
                 <input type="file" name="fileChooser" id="fileChooser" accept=".png,.jpg,.jpeg">
                 <input type="button" value="清空" id="clearBtn">
@@ -38,10 +41,10 @@
 
         <script>
             const styleSelector = document.querySelector('#objectfit'); // image
+            const rulers = document.querySelector('#rulers');
             const fileChooser = document.querySelector('#fileChooser');
             const mainCanvas = document.querySelector('#mainCanvas');
             const clearBtn = document.querySelector('#clearBtn');
-
             /* Canvas 相关 *************************************/
             const cw = mainCanvas.width; // canvas width
             const ch = mainCanvas.height; // canvas height
@@ -100,15 +103,21 @@
             });
             function drawImage() {
                 if (img) {
+                    ctx.clearRect(0, 0, cw, ch)
                     ctx.drawImage(img, 0, 0, iw, ih, ox, oy, w, h);
-                    drawRulers(ctx, 100, 100);
+                    if (rulers.checked) {
+                        drawRulers(ctx, 100, 100);
+                    }
                 }
             }
             clearBtn.onclick = function (e) {
                 ctx.clearRect(0, 0, cw, cw);
                 img = null;
             }
-
+            rulers.onchange = function () {
+                console.log(rulers.checked)
+                drawImage();
+            }
             function drawRulers(ctx, spanX = 50, spanY = 50) {
                 const { width, height } = ctx.canvas;
                 drawHorizontal(ctx, height, width, spanY);
@@ -116,7 +125,7 @@
             }
             function drawHorizontal(ctx, height, width, span) {
                 ctx.save();
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 0.5;
                 ctx.strokeStyle = "yellow"
 
                 let cur = span;
@@ -131,7 +140,7 @@
             }
             function drawVertical(ctx, height, width, span) {
                 ctx.save();
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 0.5;
                 ctx.strokeStyle = "yellow"
                 let cur = span;
                 ctx.beginPath();
