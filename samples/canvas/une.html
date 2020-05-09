@@ -15,6 +15,10 @@ arle
                 box-shadow: 0 0 1px 2px yellowgreen;
             }
 
+            .hidden {
+                visibility: hidden;
+            }
+
         </style>
     </head>
 
@@ -33,6 +37,10 @@ arle
                 <label for="guideLines">Show guideLines:</label>
                 <input type="checkbox" name="guideLines" id="guideLines">
                 <br>
+
+                <label for="magnifier">Show magnifier:</label>
+                <input type="checkbox" name="magnifier" id="magnifier">
+                <br>
                 <label for="fileChoser">Choose an image:</label>
                 <input type="file" name="fileChooser" id="fileChooser" accept=".png,.jpg,.jpeg">
                 <input type="button" value="清空" id="clearBtn">
@@ -41,21 +49,34 @@ arle
             <div class="canvasWrapper">
                 <canvas id="mainCanvas" width="800" height="600">Dirty browser!</canvas>
             </div>
+
+            <div class="canvasWrapper hidden">
+                <canvas id="subCanvas" width="800" height="600">Dirty browser!</canvas>
+            </div>
+
         </div>
 
         <script>
             const styleSelector = document.querySelector('#objectfit'); // image
             const rulers = document.querySelector('#rulers');
             const guideLines = document.querySelector('#guideLines');
+            const magnifier = document.querySelector('#magnifier');
 
             const fileChooser = document.querySelector('#fileChooser');
             const mainCanvas = document.querySelector('#mainCanvas');
+            const subCanvas = document.querySelector('#subCanvas');
             const clearBtn = document.querySelector('#clearBtn');
             /* Canvas 相关 *************************************/
             const cw = mainCanvas.width; // canvas width
             const ch = mainCanvas.height; // canvas height
             const cr = cw / ch; // canvas ratio canvas自身的长宽比: width / height
             const ctx = mainCanvas.getContext('2d');
+            const mw = 80;
+            const mh = 60;
+            let semiMW = mw >> 1;
+            let semiMH = mh >> 1;
+            let mx = 0;
+            let my = 0;
             let reader = new FileReader();
             let w = cw; // width
             let h = ch; // height
@@ -127,6 +148,9 @@ arle
             // guideLines.onchange = function () {
             //     drawImage();
             // }
+            magnifier.onchange = function () {
+                subCanvas.parentElement.style.visibility = magnifier.checked ? 'visible' : 'hidden';
+            }
             function drawRulers(ctx, spanX = 50, spanY = 50) {
                 if (rulers.checked) {
                     const { width, height } = ctx.canvas;
@@ -173,8 +197,31 @@ arle
                     drawXGuide(pos.x, ctx);
                     drawYGuide(pos.y, ctx);
                 }
+                drawMagifierOutline(pos);
             });
-
+            function drawMagifierOutline(pos) {
+                let { x, y } = pos;
+                // if (x < semiMW) { // magnet effect
+                if (x < 0) {
+                    mx = 0;
+                } else if (x > (cw - mw)) {
+                    mx = cw - mw
+                } else {
+                    mx = x;
+                }
+                // if (y < semiMH) { // magnet effect
+                if (y < 0) {
+                    my = 0;
+                } else if (y > (ch - mh)) {
+                    my = ch - mh;
+                } else {
+                    my = y;
+                }
+                ctx.beginPath();
+                ctx.strokeStyle = "#C37AD9";
+                ctx.rect(mx, my, mw, mh);
+                ctx.stroke();
+            }
             mainCanvas.addEventListener('mouseout', e => {
                 ctx.clearRect(0, 0, cw, ch);
                 drawImage();
