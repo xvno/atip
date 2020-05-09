@@ -201,7 +201,6 @@ arle
             });
             function drawMagifierOutline(pos) {
                 let { x, y } = pos;
-                // if (x < semiMW) { // magnet effect
                 if (x < 0) {
                     mx = 0;
                 } else if (x > (cw - mw)) {
@@ -209,7 +208,6 @@ arle
                 } else {
                     mx = x;
                 }
-                // if (y < semiMH) { // magnet effect
                 if (y < 0) {
                     my = 0;
                 } else if (y > (ch - mh)) {
@@ -217,6 +215,23 @@ arle
                 } else {
                     my = y;
                 }
+                /*
+                // magnet effect
+                if (x < semiMW) {
+                    mx = 0;
+                } else if (x > (cw - mw)) {
+                    mx = cw - mw
+                } else {
+                    mx = x;
+                }
+                if (y < semiMH) {
+                    my = 0;
+                } else if (y > (ch - mh)) {
+                    my = ch - mh;
+                } else {
+                    my = y;
+                }
+                */
                 ctx.beginPath();
                 ctx.strokeStyle = "#C37AD9";
                 ctx.rect(mx, my, mw, mh);
