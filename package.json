@@ -1,0 +1,19 @@
+{
+  "name": "atip",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "serve": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "vno <x@vno.io> (http://vno.io)",
+  "license": "MIT",
+  "dependencies": { },
+  "devDependencies": {
+    "koa": "^2.11.0",
+    "koa-static": "^5.0.0",
+    "nodemon": "^2.0.3"
+  }
+}
