@@ -201,19 +201,19 @@ arle
             });
             function drawMagifierOutline(pos) {
                 let { x, y } = pos;
-                if (x < 0) {
+                if (x < semiMW) {
                     mx = 0;
-                } else if (x > (cw - mw)) {
+                } else if (x > (cw - semiMW)) {
                     mx = cw - mw
                 } else {
-                    mx = x;
+                    mx = x - semiMW;
                 }
-                if (y < 0) {
+                if (y < semiMH) {
                     my = 0;
-                } else if (y > (ch - mh)) {
+                } else if (y > (ch - semiMH)) {
                     my = ch - mh;
                 } else {
-                    my = y;
+                    my = y - semiMH;
                 }
                 /*
                 // magnet effect
