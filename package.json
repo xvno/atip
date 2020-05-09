@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "serve": "nodemon index.js",
+    "dev": "env NODE_ENV=dev nodemon index.js",
+    "serve": "env NODE_ENV=serve nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "vno <x@vno.io> (http://vno.io)",
   "license": "MIT",
   "dependencies": {
     "koa": "^2.11.0",
+    "koa-logger": "^3.2.1",
     "koa-static": "^5.0.0"
   },
   "devDependencies": {
