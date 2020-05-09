@@ -1,3 +1,4 @@
+arle
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,6 +30,9 @@
                 <label for="rulers">Show rulers:</label>
                 <input type="checkbox" name="rulers" id="rulers" checked>
                 <br>
+                <label for="guideLines">Show guideLines:</label>
+                <input type="checkbox" name="guideLines" id="guideLines">
+                <br>
                 <label for="fileChoser">Choose an image:</label>
                 <input type="file" name="fileChooser" id="fileChooser" accept=".png,.jpg,.jpeg">
                 <input type="button" value="清空" id="clearBtn">
@@ -42,6 +46,8 @@
         <script>
             const styleSelector = document.querySelector('#objectfit'); // image
             const rulers = document.querySelector('#rulers');
+            const guideLines = document.querySelector('#guideLines');
+
             const fileChooser = document.querySelector('#fileChooser');
             const mainCanvas = document.querySelector('#mainCanvas');
             const clearBtn = document.querySelector('#clearBtn');
@@ -102,6 +108,7 @@
                 reader.readAsDataURL(fileChooser.files[ 0 ]);
             });
             function drawImage() {
+                console.log('rulers, guidelines ', rulers.checked, guideLines.checked)
                 if (img) {
                     ctx.clearRect(0, 0, cw, ch)
                     ctx.drawImage(img, 0, 0, iw, ih, ox, oy, w, h);
@@ -115,13 +122,17 @@
                 img = null;
             }
             rulers.onchange = function () {
-                console.log(rulers.checked)
                 drawImage();
             }
+            // guideLines.onchange = function () {
+            //     drawImage();
+            // }
             function drawRulers(ctx, spanX = 50, spanY = 50) {
-                const { width, height } = ctx.canvas;
-                drawHorizontal(ctx, height, width, spanY);
-                drawVertical(ctx, height, width, spanX);
+                if (rulers.checked) {
+                    const { width, height } = ctx.canvas;
+                    drawHorizontal(ctx, height, width, spanY);
+                    drawVertical(ctx, height, width, spanX);
+                }
             }
             function drawHorizontal(ctx, height, width, span) {
                 ctx.save();
@@ -158,8 +169,10 @@
                 ctx.clearRect(0, 0, cw, ch);
                 let pos = getCanvasCoordinate(e, mainCanvas)
                 drawImage();
-                drawXGuide(pos.x, ctx);
-                drawYGuide(pos.y, ctx);
+                if (guideLines.checked) {
+                    drawXGuide(pos.x, ctx);
+                    drawYGuide(pos.y, ctx);
+                }
             });
 
             mainCanvas.addEventListener('mouseout', e => {
@@ -180,20 +193,22 @@
                 drawGuide(y, ctx, true)
             }
             function drawGuide(v, ctx, isV) {
-                let length = ctx.canvas.height;
-                ctx.save();
-                ctx.lineWidth = 0.4;
-                ctx.strokeStyle = 'red';
-                ctx.beginPath();
-                if (isV) {
-                    length = ctx.canvas.width;
-                    ctx.moveTo(0, v);
-                    ctx.lineTo(length, v);
-                } else {
-                    ctx.moveTo(v, 0);
-                    ctx.lineTo(v, length)
+                if (guideLines.checked) {
+                    let length = ch;
+                    ctx.save();
+                    ctx.lineWidth = 0.4;
+                    ctx.strokeStyle = 'red';
+                    ctx.beginPath();
+                    if (isV) {
+                        length = cw;
+                        ctx.moveTo(0, v);
+                        ctx.lineTo(length, v);
+                    } else {
+                        ctx.moveTo(v, 0);
+                        ctx.lineTo(v, length)
+                    }
+                    ctx.stroke();
                 }
-                ctx.stroke();
             }
         </script>
     </body>
