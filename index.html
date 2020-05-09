@@ -5,72 +5,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>功能预览</title>
-        <style>
-            body {
-                margin: 0;
-                padding: 0;
-            }
-
-            #header {
-                position: sticky;
-                line-height: 30px;
-                background-color: #C37AD9;
-                padding: 10px;
-                color: #FFF;
-                font-size: 26px;
-                font-weight: 600;
-                font-family: 'Courier New', Courier, monospace;
-                text-transform: capitalize;
-                /* text-transform: uppercase; */
-            }
-
-            #main {
-                display: flex;
-                flex-direction: row;
-                align-items: stretch;
-                justify-content: space-evenly;
-                position: absolute;
-                top: 55px;
-                right: 5px;
-                bottom: 5px;
-                left: 5px;
-            }
-
-            #links {
-                flex-shrink: 0;
-                flex-grow: 0.5;
-                box-shadow: 0 0 2px 2px #C37AD9;
-                overflow: auto;
-                overflow-y: scroll;
-            }
-
-            #iframeWrapper {
-                flex-shrink: 0;
-                flex-grow: 3;
-                box-shadow: 0 0 2px 2px #C37AD9;
-                overflow: auto;
-                overflow-y: scroll;
-                position: relative;
-            }
-
-            ol {
-                margin-block: 0.3em;
-                padding-inline-start: 2em !important;
-            }
-
-            li {
-                padding-right: 1em;
-            }
-
-            li>a {
-                text-decoration: none;
-            }
-
-        </style>
+        <link rel="stylesheet" href="assets/index.css">
     </head>
 
     <body>
-        <div id="header">header</div>
+        <div id="header">实例展示</div>
         <div id="main">
             <div id="links">
                 <ol>
@@ -84,24 +23,7 @@
         </div>
         <div id="footer"></div>
 
-        <script lang="javascript">
-            const links = document.querySelector('#links');
-            const iframeWrapper = document.querySelector('#iframeWrapper')
-            const previewer = document.querySelector('#previewer');
-
-            function resizePreviewer() {
-                previewer.width = iframeWrapper.clientWidth;
-                previewer.height = iframeWrapper.clientHeight;
-            }
-
-            links.addEventListener('click', ev => {
-                resizePreviewer();
-                let { target } = ev;
-                previewer.src = target?.href || 'about:blank';
-                ev.preventDefault();
-                ev.stopPropagation();
-            }, true)
-        </script>
+        <script src="assets/index.js"></script>
     </body>
 
 </html>
