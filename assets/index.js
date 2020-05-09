@@ -1,4 +1,5 @@
-document.onload = function () {
+// document.addEventListener('DOMContentLoaded', () => { });
+window.onload = function () {
     const links = document.querySelector('#links');
     const iframeWrapper = document.querySelector('#iframeWrapper');
     const previewer = document.querySelector('#previewer');
