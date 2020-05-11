@@ -200,42 +200,27 @@ arle
                 drawMagifierOutline(pos);
             });
             function drawMagifierOutline(pos) {
-                let { x, y } = pos;
-                if (x < semiMW) {
-                    mx = 0;
-                } else if (x > (cw - semiMW)) {
-                    mx = cw - mw
-                } else {
-                    mx = x - semiMW;
+                if (magnifier.checked) {
+                    let { x, y } = pos;
+                    if (x < semiMW) {
+                        mx = 0;
+                    } else if (x > (cw - semiMW)) {
+                        mx = cw - mw
+                    } else {
+                        mx = x - semiMW;
+                    }
+                    if (y < semiMH) {
+                        my = 0;
+                    } else if (y > (ch - semiMH)) {
+                        my = ch - mh;
+                    } else {
+                        my = y - semiMH;
+                    }
+                    ctx.beginPath();
+                    ctx.strokeStyle = "#C37AD9";
+                    ctx.rect(mx, my, mw, mh);
+                    ctx.stroke();
                 }
-                if (y < semiMH) {
-                    my = 0;
-                } else if (y > (ch - semiMH)) {
-                    my = ch - mh;
-                } else {
-                    my = y - semiMH;
-                }
-                /*
-                // magnet effect
-                if (x < semiMW) {
-                    mx = 0;
-                } else if (x > (cw - mw)) {
-                    mx = cw - mw
-                } else {
-                    mx = x;
-                }
-                if (y < semiMH) {
-                    my = 0;
-                } else if (y > (ch - mh)) {
-                    my = ch - mh;
-                } else {
-                    my = y;
-                }
-                */
-                ctx.beginPath();
-                ctx.strokeStyle = "#C37AD9";
-                ctx.rect(mx, my, mw, mh);
-                ctx.stroke();
             }
             mainCanvas.addEventListener('mouseout', e => {
                 ctx.clearRect(0, 0, cw, ch);
