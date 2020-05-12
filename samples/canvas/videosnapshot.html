@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Video 获取一帧数据</title>
+        <style>
+            .column {
+                float: left;
+                width: 50%;
+            }
+
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            #c {
+                /* border: 1px solid black; */
+                box-shadow: 0 0 1px 2px #C37AD9;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div class="row">
+            <div class="column">
+                <div>
+                    Video element:
+                </div>
+                <video controls height="270" id="v" tabindex="-1" autobuffer="auto" preload="auto">
+                    <!-- <source type="video/webm" src="https://www.html5rocks.com/tutorials/video/basics/Chrome_ImF.webm" /> -->
+                    <source type="video/mp4" src="v1.mp4" />
+                </video>
+            </div>
+            <div class="column">
+
+                <!-- <div>
+                    Momentum: <input type=text id="t">
+                </div> -->
+            </div>
+        </div>
+        <div class="row">
+            <p>Snapit</p>
+            <input type="button" value="虎躯一震" id="snapit">
+            <br>
+            <div class="column">
+                <p>Canvas element:</p>
+                <canvas id="c"></canvas>
+            </div>
+            <div class="column">
+                <p>Image element:</p>
+                <img src="" alt="no data" id="i">
+            </div>
+        </div>
+        <script>
+            var vid = document.getElementById("v");
+            var canvas = document.getElementById("c");
+            canvas.style.dispaly = "none";
+            var context = canvas.getContext('2d');
+
+            var cw = canvas.width = 540;
+            var ch = canvas.height = Math.round(cw / 1.7777);
+            /*
+            var targetFrame = document.getElementById('t');
+            var targetOffset = 0;
+            window.addEventListener('wheel', function (e) {
+                e.preventDefault();
+                targetOffset = targetOffset + (e.deltaY / 1000);
+                targetFrame.value = targetOffset;
+                seek(); // for demo purpose, we only listen to wheel
+                return false;
+            });
+            // that's all is needed
+            vid.addEventListener('seeked', function () {
+                context.drawImage(vid, 0, 0, cw, ch);
+            });
+            // for demo
+            // removed the rendering loop
+            // now it only changes the video's currentTime property
+            function seek() {
+                targetOffset = targetOffset * 0.9;
+                targetFrame.value = Math.round(targetOffset * 100) / 100;
+                var vct = vid.currentTime - targetOffset;
+                if (vct < 0) {
+                    vct = vid.duration + vct;
+                } else if (vct > vid.duration) {
+                    vct = vct - vid.duration;
+                }
+                vid.currentTime = vct;
+            }
+            */
+            const snapit = document.getElementById('snapit');
+            const img = document.getElementById('i');
+
+            snapit.onclick = function () {
+                const ti = new Image();
+                ti.crossOrigin = 'anonymous'
+                context.drawImage(vid, 0, 0, cw, ch);
+                let data = canvas.toDataURL();
+                img.src = data;
+                img.onload = function () {
+                    console.log('a....你竟然是师兄');
+                }
+            }
+        </script>
+    </body>
+
+</html>
