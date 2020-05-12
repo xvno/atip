@@ -17,9 +17,17 @@
                 clear: both;
             }
 
-            #c {
+            #canvasPreviewer,
+            #imgPreviewer {
                 /* border: 1px solid black; */
                 box-shadow: 0 0 1px 2px #C37AD9;
+            }
+
+            #imgPreviewer {
+                width: 540px;
+                height: 304px;
+                display: inline-block;
+
             }
 
         </style>
@@ -31,7 +39,7 @@
                 <div>
                     Video element:
                 </div>
-                <video controls height="270" id="v" tabindex="-1" autobuffer="auto" preload="auto">
+                <video controls height="270" id="srcVideo" tabindex="-1" autobuffer="auto" preload="auto">
                     <!-- <source type="video/webm" src="https://www.html5rocks.com/tutorials/video/basics/Chrome_ImF.webm" /> -->
                     <source type="video/mp4" src="v1.mp4" />
                 </video>
@@ -49,16 +57,16 @@
             <br>
             <div class="column">
                 <p>Canvas element:</p>
-                <canvas id="c"></canvas>
+                <canvas id="canvasPreviewer"></canvas>
             </div>
             <div class="column">
                 <p>Image element:</p>
-                <img src="" alt="no data" id="i">
+                <img src="" alt="No data yet..." id="imgPreviewer">
             </div>
         </div>
         <script>
-            var vid = document.getElementById("v");
-            var canvas = document.getElementById("c");
+            var vid = document.getElementById("srcVideo");
+            var canvas = document.getElementById("canvasPreviewer");
             canvas.style.dispaly = "none";
             var context = canvas.getContext('2d');
 
@@ -94,7 +102,7 @@
             }
             */
             const snapit = document.getElementById('snapit');
-            const img = document.getElementById('i');
+            const img = document.getElementById('imgPreviewer');
 
             snapit.onclick = function () {
                 const ti = new Image();
