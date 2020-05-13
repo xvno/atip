@@ -2,6 +2,8 @@ const path = require('path');
 const Koa = require('koa');
 const app = new Koa();
 const { unifyWidth } = require('./src/utils.js');
+const cors = require('@koa/cors');
+app.use(cors());
 
 // configure logger
 switch (process.env.NODE_ENV) {

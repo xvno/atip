@@ -1,0 +1,263 @@
+arle
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Canvas Selector</title>
+        <style>
+            .canvasWrapper {
+                background-color: lightgrey;
+                border-radius: 3px;
+                display: inline-block;
+                border: 1px solid yellowgreen;
+                box-shadow: 0 0 1px 2px yellowgreen;
+            }
+
+            .hidden {
+                visibility: hidden;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div id="main">
+            <form>
+                <label for="objectfit">Object-fit: </label>
+                <select name="objectfit" id="objectfit">
+                    <option value="contain" selected>contain</option>
+                    <option value="cover">cover</option>
+                </select>
+                <br>
+                <label for="rulers">Show rulers:</label>
+                <input type="checkbox" name="rulers" id="rulers" checked>
+                <br>
+                <label for="guideLines">Show guideLines:</label>
+                <input type="checkbox" name="guideLines" id="guideLines">
+                <br>
+
+                <label for="magnifier">Show magnifier:</label>
+                <input type="checkbox" name="magnifier" id="magnifier">
+                <br>
+                <label for="fileChoser">Choose an image:</label>
+                <input type="file" name="fileChooser" id="fileChooser" accept=".png,.jpg,.jpeg">
+                <input type="button" value="清空" id="clearBtn">
+            </form>
+            <br>
+            <div class="canvasWrapper">
+                <canvas id="mainCanvas" width="800" height="600">Dirty browser!</canvas>
+            </div>
+
+            <div class="canvasWrapper hidden">
+                <canvas id="subCanvas" width="800" height="600">Dirty browser!</canvas>
+            </div>
+
+        </div>
+
+        <script>
+            const styleSelector = document.querySelector('#objectfit'); // image
+            const rulers = document.querySelector('#rulers');
+            const guideLines = document.querySelector('#guideLines');
+            const magnifier = document.querySelector('#magnifier');
+
+            const fileChooser = document.querySelector('#fileChooser');
+            const mainCanvas = document.querySelector('#mainCanvas');
+            const subCanvas = document.querySelector('#subCanvas');
+            const clearBtn = document.querySelector('#clearBtn');
+            /* Canvas 相关 *************************************/
+            const cw = mainCanvas.width; // canvas width
+            const ch = mainCanvas.height; // canvas height
+            const cr = cw / ch; // canvas ratio canvas自身的长宽比: width / height
+            const ctx = mainCanvas.getContext('2d');
+            const mw = 80;
+            const mh = 60;
+            let semiMW = mw >> 1;
+            let semiMH = mh >> 1;
+            let mx = 0;
+            let my = 0;
+            let reader = new FileReader();
+            let w = cw; // width
+            let h = ch; // height
+            let ox = 0; // offset x
+            let oy = 0; // offset y
+            let iw, ih, ir;
+            let img;
+            function resetProps() {
+                reader = null;
+                w = cw;
+                h = ch;
+                ox = 0;
+                oy = 0;
+                iw = 0;
+                ih = 0;
+                ir = 0;
+                img = null;
+            }
+            /* 参数 for drawImage *****************************/
+            fileChooser.addEventListener('change', e => {
+                resetProps();
+                reader = new FileReader();
+                reader.onload = ev => {
+                    img = new Image();
+                    img.src = reader.result;
+                    img.onload = function () {
+                        iw = img.width; // raw image width
+                        ih = img.height; // raw image height
+                        ir = iw / ih; // raw image 长宽比
+                        switch (styleSelector.value) {
+                            case 'cover':
+                                if (ir > cr) {
+                                    h = (w / iw) * ih;
+                                } else if (ir < cr) {
+                                    ih = iw * ch / cw; // iw * (ch / cw)
+                                }
+                                break;
+                            default: // contain
+                                if (ir > cr) {
+                                    h = (w / iw) * ih;
+                                    oy = (ch - h) >> 1;
+                                } else if (ir < cr) {
+                                    w = (h / ih) * iw;
+                                    ox = (cw - w) >> 1;
+                                }
+                        }
+                        drawImage();
+                    }
+                };
+                reader.readAsDataURL(fileChooser.files[ 0 ]);
+            });
+            function drawImage() {
+                console.log('rulers, guidelines ', rulers.checked, guideLines.checked)
+                if (img) {
+                    ctx.clearRect(0, 0, cw, ch)
+                    ctx.drawImage(img, 0, 0, iw, ih, ox, oy, w, h);
+                    if (rulers.checked) {
+                        drawRulers(ctx, 100, 100);
+                    }
+                }
+            }
+            clearBtn.onclick = function (e) {
+                ctx.clearRect(0, 0, cw, cw);
+                img = null;
+            }
+            rulers.onchange = function () {
+                drawImage();
+            }
+            // guideLines.onchange = function () {
+            //     drawImage();
+            // }
+            magnifier.onchange = function () {
+                subCanvas.parentElement.style.visibility = magnifier.checked ? 'visible' : 'hidden';
+            }
+            function drawRulers(ctx, spanX = 50, spanY = 50) {
+                if (rulers.checked) {
+                    const { width, height } = ctx.canvas;
+                    drawHorizontal(ctx, height, width, spanY);
+                    drawVertical(ctx, height, width, spanX);
+                }
+            }
+            function drawHorizontal(ctx, height, width, span) {
+                ctx.save();
+                ctx.lineWidth = 0.5;
+                ctx.strokeStyle = "yellow"
+
+                let cur = span;
+                ctx.beginPath();
+                while (cur < height) {
+                    ctx.moveTo(0, cur);
+                    ctx.lineTo(width, cur)
+                    cur += span;
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+            function drawVertical(ctx, height, width, span) {
+                ctx.save();
+                ctx.lineWidth = 0.5;
+                ctx.strokeStyle = "yellow"
+                let cur = span;
+                ctx.beginPath();
+                while (cur < width) {
+                    ctx.moveTo(cur, 0);
+                    ctx.lineTo(cur, height)
+                    cur += span;
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            /* 增加鼠标位置辅助线 **************************************************/
+            mainCanvas.addEventListener('mousemove', e => {
+                ctx.clearRect(0, 0, cw, ch);
+                let pos = getCanvasCoordinate(e, mainCanvas)
+                drawImage();
+                if (guideLines.checked) {
+                    drawXGuide(pos.x, ctx);
+                    drawYGuide(pos.y, ctx);
+                }
+                drawMagifierOutline(pos);
+            });
+            function drawMagifierOutline(pos) {
+                if (magnifier.checked) {
+                    let { x, y } = pos;
+                    if (x < semiMW) {
+                        mx = 0;
+                    } else if (x > (cw - semiMW)) {
+                        mx = cw - mw
+                    } else {
+                        mx = x - semiMW;
+                    }
+                    if (y < semiMH) {
+                        my = 0;
+                    } else if (y > (ch - semiMH)) {
+                        my = ch - mh;
+                    } else {
+                        my = y - semiMH;
+                    }
+                    ctx.beginPath();
+                    ctx.strokeStyle = "#C37AD9";
+                    ctx.rect(mx, my, mw, mh);
+                    ctx.stroke();
+                }
+            }
+            mainCanvas.addEventListener('mouseout', e => {
+                ctx.clearRect(0, 0, cw, ch);
+                drawImage();
+            });
+
+            function getCanvasCoordinate(e, canvas) {
+                let outPos = canvas.getBoundingClientRect();
+                let x = e.clientX - outPos.x;
+                let y = e.clientY - outPos.y;
+                return { x, y }
+            }
+            function drawXGuide(x, ctx) {
+                drawGuide(x, ctx)
+            }
+            function drawYGuide(y, ctx) {
+                drawGuide(y, ctx, true)
+            }
+            function drawGuide(v, ctx, isV) {
+                if (guideLines.checked) {
+                    let length = ch;
+                    ctx.save();
+                    ctx.lineWidth = 0.4;
+                    ctx.strokeStyle = 'red';
+                    ctx.beginPath();
+                    if (isV) {
+                        length = cw;
+                        ctx.moveTo(0, v);
+                        ctx.lineTo(length, v);
+                    } else {
+                        ctx.moveTo(v, 0);
+                        ctx.lineTo(v, length)
+                    }
+                    ctx.stroke();
+                }
+            }
+        </script>
+    </body>
+
+</html>

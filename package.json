@@ -16,6 +16,7 @@
     "koa-static": "^5.0.0"
   },
   "devDependencies": {
+    "@koa/cors": "^3.0.0",
     "nodemon": "^2.0.3"
   }
 }

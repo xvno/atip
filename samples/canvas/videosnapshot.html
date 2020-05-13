@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Video 获取一帧数据</title>
+        <style>
+            .column {
+                float: left;
+                width: 50%;
+            }
+
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            #canvasPreviewer,
+            #imgPreviewer {
+                /* border: 1px solid black; */
+                box-shadow: 0 0 1px 2px #C37AD9;
+            }
+
+            #imgPreviewer {
+                width: 540px;
+                height: 304px;
+                display: inline-block;
+            }
+
+            #imgPreviewer:focus {
+                box-shadow: 0 0 1px 2px red;
+            }
+
+            #modalPane {
+                position: absolute;
+                z-index: 65535;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: none;
+                color: white;
+            }
+
+            #modalPane .veil {
+                position: absolute;
+                display: block;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background-color: #C37AD9;
+                opacity: 0.75;
+                z-index: 0;
+            }
+
+            #modalPane .panel {
+                display: block;
+                position: absolute;
+                min-height: 20em;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                color: black;
+                opacity: 1;
+                border-radius: 5px;
+                filter: drop-shadow(1px 10px 20px rgb(0, 0, 0, 0.5));
+                padding: 1em 2em 2em 2em;
+            }
+
+            #modalPane .panel img[src=""] {
+                display: none;
+            }
+
+            .showModal {
+                display: block !important;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div id="modalPane">
+            <div class="veil"></div>
+            <div class="panel">
+                <h3 class="title">请用鼠标右键点击下面图像, 并通过右键菜单复制图像</h3>
+                <img src="" alt="No data yet!" id="copier">
+            </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <div>
+                    Video element:
+                </div>
+                <video controls height="270" id="srcVideo" tabindex="-1" autobuffer="auto" preload="auto">
+                    <!-- <source type="video/webm" src="https://www.html5rocks.com/tutorials/video/basics/Chrome_ImF.webm" /> -->
+                    <source type="video/mp4" src="v1.mp4" />
+                </video>
+            </div>
+            <div class="column">
+                <div>
+                    Momentum: <input type=text id="textInput">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <p>Snapit</p>
+            <input type="button" value="虎躯一震" id="snapit">
+            <input type="button" value="妙笔生花" id="painImage">
+            <input type="button" value="凌波微步" id="showClipboar">
+            <input type="button" value="试问廉颇" id="queryPermission">
+            <a href="" download id="downloadAnchor">hidden</a>
+            <br>
+            <div class="column">
+                <p>Canvas element:</p>
+                <canvas id="canvasPreviewer"></canvas>
+            </div>
+            <div class="column">
+                <p>Image element:</p>
+                <img src="" alt="No data yet..." id="imgPreviewer">
+            </div>
+        </div>
+        <script>
+            window.onload = function () {
+                const modal = document.getElementById('modalPane')
+                const veil = document.querySelector('#modalPane>.veil');
+                const copier = document.querySelector('#copier'); // #copier
+
+                copier.onload = function () {
+                    modal.classList.add('showModal');
+                }
+
+                veil.onclick = function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    modal.classList.remove('showModal');
+                    copier.src = "";
+                }
+                let vid = document.getElementById("srcVideo");
+                let canvas = document.getElementById("canvasPreviewer");
+                canvas.style.dispaly = "none";
+                let context = canvas.getContext('2d');
+
+                let cw = canvas.width = 540;
+                let ch = canvas.height = Math.round(cw / 1.7777);
+                let ti = document.getElementById('textInput');
+
+                const snapit = document.getElementById('snapit');
+                const painImage = document.getElementById('painImage');
+                const showClipboar = document.getElementById('showClipboar');
+                const queryPermission = document.getElementById('queryPermission');
+                const downloadAnchor = document.getElementById('downloadAnchor');
+
+                const img = document.getElementById('imgPreviewer');
+                document.addEventListener('paste', ev => {
+                    console.log('navigator.clipboard: ', navigator.clipboard)
+                    console.log('paste: ', ev.clipboardData)
+                    console.log('image/png', ev.clipboardData.getData('image/png'))
+                    console.log('text/plain', ev.clipboardData.getData('text/plain'))
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                })
+                // document.addEventListener('copy', ev => {
+                // console.log(ev);
+                // let dataURL = canvas.toDataURL();
+                // ev.clipboardData.setData('image/png', dataURL);
+                // console.log('document已经copy到剪贴板');
+                /*
+                console.log(ev.clipboardData)
+                console.log('heya------------------------')
+                console.log(ev.clipboardData.getData('image/png'))
+                */
+                // img.src = canvas.toDataURL(); //ev.clipboardData.getData('image/png');
+                // img.onload = function () {
+                //     console.log('image loaded from clipboard!')
+                //     console.log('------------------------yahe')
+                // }
+                // })
+                /*
+                let targetFrame = document.getElementById('t');
+                let targetOffset = 0;
+                window.addEventListener('wheel', function (e) {
+                    e.preventDefault();
+                    targetOffset = targetOffset + (e.deltaY / 1000);
+                    targetFrame.value = targetOffset;
+                    seek(); // for demo purpose, we only listen to wheel
+                    return false;
+                });
+                // that's all is needed
+                vid.addEventListener('seeked', function () {
+                    context.drawImage(vid, 0, 0, cw, ch);
+                });
+                // for demo
+                // removed the rendering loop
+                // now it only changes the video's currentTime property
+                function seek() {
+                    targetOffset = targetOffset * 0.9;
+                    targetFrame.value = Math.round(targetOffset * 100) / 100;
+                    let vct = vid.currentTime - targetOffset;
+                    if (vct < 0) {
+                        vct = vid.duration + vct;
+                    } else if (vct > vid.duration) {
+                        vct = vct - vid.duration;
+                    }
+                    vid.currentTime = vct;
+                }
+                */
+                /*             ti.addEventListener('copy', function (ev) {
+                                console.log(ev)
+                                ev.preventDefault();
+                                ev.clipboardData.setData('image/png', canvas.toDataURL());
+                                ev.stopPropagation();
+                                console.log('已经copy到剪贴板');
+                            }) */
+
+                snapit.onclick = function () {
+                    context.drawImage(vid, 0, 0, cw, ch);
+                    copier.src = canvas.toDataURL();
+                }
+                painImage.onclick = function () {
+                    img.src = canvas.toDataURL(); //ev.clipboardData.getData('image/png');
+                    img.onload = function () {
+                        console.log('image loaded!')
+                    }
+                }
+                showClipboar.onclick = function (ev) {
+                    // document.execCommand('gift');
+                    document.dispatchEvent(new Event('gift', { bubbles: false, cancelable: true }))
+                }
+                queryPermission.onclick = function (ev) {
+                    // navigator.permissions.query({ name: "geolocation" }).then(function (v) {
+                    //     // navigator.clipboard.writeText(ti.value)
+                    //     navigator.clipboard.write(canvas.toDataURL()).then(v => {
+                    //         console.log('finished');
+                    //     })
+                    // })
+                    console.log('heya...试问廉颇', ev)
+                    downloadAnchor.download = `img-${Date.now()}.png`;
+                    downloadAnchor.href = canvas.toDataURL()
+                    downloadAnchor.click();
+                }
+
+                imgPreviewer.onclick = function (ev) {
+                    copier.src = canvas.toDataURL();
+                    this.focus();
+                    let range = document.createRange();
+                    range.setStartBefore(imgPreviewer);
+                    range.setEndAfter(imgPreviewer);
+                    range.selectNode(imgPreviewer);
+                    let sel = window.getSelection();
+                    sel.addRange(range);
+                    console.log(sel);
+                    const ret = document.execCommand('copy');
+                    console.log(ret);
+                }
+                function modelPic(title, readme, img) {
+                }
+            }
+        </script>
+    </body>
+
+</html>
