@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Video 获取一帧数据</title>
+        <style>
+            .column {
+                float: left;
+                width: 50%;
+            }
+
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            #modalPane {
+                position: absolute;
+                z-index: 65535;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: none;
+                color: white;
+            }
+
+            #modalPane .veil {
+                position: absolute;
+                display: block;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background-color: #C37AD9;
+                opacity: 0.75;
+                z-index: 0;
+            }
+
+            #modalPane .panel {
+                display: block;
+                position: absolute;
+                min-height: 20em;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                color: black;
+                opacity: 1;
+                border-radius: 5px;
+                filter: drop-shadow(1px 10px 20px rgb(0, 0, 0, 0.5));
+                padding: 1em 2em 2em 2em;
+            }
+
+            #modalPane .panel img[src=""] {
+                display: none;
+            }
+
+            .showModal {
+                display: block !important;
+            }
+
+            #canvasPreviewer {
+                display: none;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div id="modalPane">
+            <div class="veil"></div>
+            <div class="panel">
+                <h3 class="title">请用鼠标右键点击下面图像, 并通过右键菜单复制图像</h3>
+                <img src="" alt="No data yet!" id="copier">
+            </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <div>
+                    Video element:
+                </div>
+                <video controls height="270" id="srcVideo" tabindex="-1" autobuffer="auto" preload="auto">
+                    <source type="video/mp4" src="v1.mp4" />
+                </video>
+            </div>
+        </div>
+        <div class="row">
+            <p>Snap</p>
+            <input type="button" value="虎躯一震" id="snap">
+            <canvas id="canvasPreviewer"></canvas>
+        </div>
+        <script>
+            window.onload = function () {
+                const modal = document.getElementById('modalPane')
+                const veil = document.querySelector('#modalPane>.veil');
+                const copier = document.querySelector('#copier'); // #copier
+
+                copier.onload = function () {
+                    modal.classList.add('showModal');
+                }
+
+                veil.onclick = function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    modal.classList.remove('showModal');
+                    copier.src = "";
+                }
+
+                const srcVideo = document.getElementById("srcVideo");
+                const canvas = document.getElementById("canvasPreviewer");
+                const ctx = canvas.getContext('2d');
+                const snap = document.getElementById('snap');
+                let cw, ch;
+
+                snap.onclick = function () {
+                    ch = canvas.height = srcVideo.height;
+                    cw = canvas.width = srcVideo.width || ch * 16 / 9;
+                    ctx.drawImage(srcVideo, 0, 0, cw, ch);
+                    copier.src = canvas.toDataURL();
+                }
+            }
+        </script>
+    </body>
+
+</html>
